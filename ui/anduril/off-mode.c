@@ -361,15 +361,6 @@ uint8_t off_state(Event event, uint16_t arg) {
     }
     #endif
 
-    #ifdef USE_COUNTER_MODE
-    // 8 clicks: counter mode
-    else if (event == EV_8clicks) {
-        blink_once();
-        set_state(counter_state, 0);
-        return EVENT_HANDLED;
-    }
-    #endif
-
     #ifdef USE_GLOBALS_CONFIG
     // 9 clicks, but hold last click: configure misc global settings
     else if ((event == EV_click9_hold) && (!arg)) {

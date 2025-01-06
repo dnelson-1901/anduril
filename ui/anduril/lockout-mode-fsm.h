@@ -9,3 +9,7 @@
 #define TICK_DURING_STANDBY
 #endif
 
+#ifdef USE_LOCKOUT_COUNTER
+#define USE_BLINK_BIG_NUM
+#endif
+

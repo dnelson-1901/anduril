@@ -8,17 +8,13 @@
 
 uint8_t lockout_state(Event event, uint16_t arg) {
     #ifdef USE_MOON_DURING_LOCKOUT_MODE
-    // momentary(ish) moon mode during lockout
-    // button is being held
-    #ifdef USE_AUX_RGB_LEDS
-    // don't turn on during RGB aux LED configuration
-    if (event == EV_click7_hold) { set_level(0); } else
-    #endif
-    if ((event & (B_CLICK | B_PRESS)) == (B_CLICK | B_PRESS)) {
+    // momentary(ish) moon mode during lockout 1H and 2H
+    if (((event & (B_CLICK | B_PRESS)) == (B_CLICK | B_PRESS))
+            && ((event & B_COUNT) <= 2)){
         // hold: lowest floor
         // click, hold: highest floor (or manual mem level)
         uint8_t lvl = cfg.ramp_floors[0];
-        if (1 == (event & 0x0f)) {  // first click
+        if (1 == (event & B_COUNT)) {  // first click
             if (cfg.ramp_floors[1] < lvl) lvl = cfg.ramp_floors[1];
         } else {  // 2nd click or later
             if (cfg.ramp_floors[1] > lvl) lvl = cfg.ramp_floors[1];
@@ -118,13 +114,22 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         return EVENT_HANDLED;
     }
 
-    #if NUM_CHANNEL_MODES > 1
-    // 3H: next channel mode
+    #if defined(USE_LOCKOUT_COUNTER) || (NUM_CHANNEL_MODES > 1)
+    // 3H: reset lockout counter, and/or next channel mode
     else if (event == EV_click3_hold) {
-        if (0 == (arg % TICKS_PER_SECOND)) {
-            // pretend the user clicked 3 times to change channels
-            return channel_mode_state(EV_3clicks, 0);
-        }
+        #ifdef USE_LOCKOUT_COUNTER
+            if (!arg) {
+                lockout_counter = 0;
+                blink_once();
+                return EVENT_HANDLED;
+            }
+        #endif
+        #if (NUM_CHANNEL_MODES > 1)
+            if (0 == (arg % TICKS_PER_SECOND)) {
+                // pretend the user clicked 3 times to change channels
+                return channel_mode_state(EV_3clicks, 0);
+            }
+        #endif
     }
     #endif
 
@@ -195,6 +200,21 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     }
     #endif  // if extended simple UI
 
+    #ifdef USE_LOCKOUT_COUNTER
+    // 1C: Add 1 to the counter value
+    else if (event == EV_1click) {
+        lockout_counter ++;
+        return EVENT_HANDLED;
+    }
+    else if (event == EV_2clicks) {
+        set_state(lockout_counter_readout_state, 0);
+        return EVENT_HANDLED;
+    }
+    // 3H: reset counter to zero
+    // (handled elsewhere because 3H already in use on multi-channel lights)
+    //else if (event == EV_click3_hold) { }
+    #endif
+
     #ifdef USE_AUTOLOCK
     // 10H: configure the autolock option
     else if (event == EV_click10_hold) {
@@ -216,4 +236,20 @@ uint8_t autolock_config_state(Event event, uint16_t arg) {
     return config_state_base(event, arg, 1, autolock_config_save);
 }
 #endif  // #ifdef USE_AUTOLOCK
+
+#ifdef USE_LOCKOUT_COUNTER
+uint8_t lockout_counter_readout_state(Event event, uint16_t arg) {
+    // 1 click: exit
+    if (event == EV_1click) {
+        set_state(lockout_state, 0);
+        return EVENT_HANDLED;
+    }
+    return EVENT_NOT_HANDLED;
+}
+
+inline void lockout_counter_readout_iter() {
+    blink_big_num(lockout_counter);
+    set_state_deferred(lockout_state, 0);
+}
+#endif
 

@@ -14,3 +14,8 @@ uint8_t lockout_state(Event event, uint16_t arg);
 uint8_t autolock_config_state(Event event, uint16_t arg);
 #endif
 
+#ifdef USE_LOCKOUT_COUNTER
+uint16_t lockout_counter = 0;
+uint8_t lockout_counter_readout_state(Event event, uint16_t arg);
+#endif
+

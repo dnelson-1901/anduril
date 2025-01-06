@@ -170,15 +170,16 @@
 //#define USE_SOS_MODE_IN_FF_GROUP  // put SOS in the "boring strobes" mode
 #define USE_SOS_MODE_IN_BLINKY_GROUP  // put SOS in the blinkies mode group
 
-// counter mode is pretty niche
-//#define USE_COUNTER_MODE
-
 // enable a mode for locking the light for safe carry
 #define USE_LOCKOUT_MODE
 // should lockout mode function as a momentary moon mode?
 #define USE_MOON_DURING_LOCKOUT_MODE
 // add an optional setting to lock the light after being off for a while
 #define USE_AUTOLOCK
+// count single button clicks during lockout mode
+#if (ROM_SIZE > 10000)
+#define USE_LOCKOUT_COUNTER
+#endif
 
 // enable momentary mode
 #define USE_MOMENTARY_MODE
