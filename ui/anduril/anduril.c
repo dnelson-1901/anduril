@@ -65,6 +65,10 @@
 #include "anduril/lockout-mode-fsm.h"
 #endif
 
+#ifdef USE_COUNTER_MODE
+#include "anduril/counter-mode-fsm.h"
+#endif
+
 // enable FSM features needed by strobe modes
 #include "anduril/strobe-modes-fsm.h"
 
@@ -119,6 +123,10 @@
 
 #ifdef USE_LOCKOUT_MODE
 #include "anduril/lockout-mode.h"
+#endif
+
+#ifdef USE_COUNTER_MODE
+#include "anduril/counter-mode.h"
 #endif
 
 #if (defined(USE_MOMENTARY_MODE) || defined(USE_TACTICAL_MODE))
@@ -187,6 +195,10 @@
 
 #ifdef USE_LOCKOUT_MODE
 #include "anduril/lockout-mode.c"
+#endif
+
+#ifdef USE_COUNTER_MODE
+#include "anduril/counter-mode.c"
 #endif
 
 #if (defined(USE_MOMENTARY_MODE) || defined(USE_TACTICAL_MODE))
@@ -355,6 +367,12 @@ void loop() {
     #if defined(USE_SOS_MODE) && defined(USE_SOS_MODE_IN_BLINKY_GROUP)
     else if (state == sos_state) {
         sos_mode_iter();
+    }
+    #endif
+
+    #ifdef USE_COUNTER_MODE
+    else if (state == counter_readout_state) {
+        counter_readout_iter();
     }
     #endif
 

@@ -170,6 +170,9 @@
 //#define USE_SOS_MODE_IN_FF_GROUP  // put SOS in the "boring strobes" mode
 #define USE_SOS_MODE_IN_BLINKY_GROUP  // put SOS in the blinkies mode group
 
+// counter mode is pretty niche
+//#define USE_COUNTER_MODE
+
 // enable a mode for locking the light for safe carry
 #define USE_LOCKOUT_MODE
 // should lockout mode function as a momentary moon mode?

@@ -636,6 +636,33 @@ at the ramp size plus 1, so it may be different if a light has a
 different ramp size.
 
 
+Counter Mode
+------------
+
+This feature is not compiled in by default.  Add this to an `anduril.h` file to
+enable it:
+
+  `#define USE_COUNTER_MODE`
+
+Counts how many times you press the button, and can display the number.  This
+is similar to a "golf counter" or other clicky counter device, where you tap a
+button whenever a particular type of event happens, and then later you can get
+a readout of how many times it occurred.  For example, counting how many
+bunnies you saw during a walk, or click every time something makes you smile
+and then find out at the end of the day how many smiles you had.
+
+Usage:
+
+  - `Off -> 8C`: Enter counter mode.
+  - `1C .. 15C`: Add this many to the counter.
+  - `1H`: Reset the counter to zero.
+  - `2H`: Blink out the total counted.  Max 65535.
+  - `3H`: Exit counter mode.
+
+The count resets if you manually reset it with 1H, or if the battery is
+disconnected.  It does NOT reset when you enter or exit counter mode.
+
+
 Configuration Menus
 -------------------
 
